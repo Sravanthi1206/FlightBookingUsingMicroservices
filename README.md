@@ -37,12 +37,7 @@ Before running the system, ensure the following are installed:
 - Git
 - IDE (Eclipse / IntelliJ / VS Code)
 
-### **Minimum Hardware Requirements**
-- 8GB RAM recommended  
-- 5GB free disk space  
-- Stable internet connection  
 
----
 
 ## 4. Project Structure
 
