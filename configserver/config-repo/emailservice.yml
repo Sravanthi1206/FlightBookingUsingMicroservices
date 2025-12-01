@@ -1,0 +1,20 @@
+server:
+  port: 8300
+spring:
+  application:
+    name: emailservice
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sravanthigurram955@gmail.com
+    password: Srav@22bce2020
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
