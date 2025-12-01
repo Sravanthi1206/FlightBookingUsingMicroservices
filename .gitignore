@@ -4,23 +4,14 @@
 .classpath
 .project
 
-# Eclipse build dirs
+# Build
 bin/
 tmp/
-
-# Maven
 target/
 
 # Logs
 *.log
 
-# OS files
+# OS junk
 .DS_Store
 Thumbs.db
-
-# Java
-*.class
-
-# Spring Boot
-*.jar
-*.war
