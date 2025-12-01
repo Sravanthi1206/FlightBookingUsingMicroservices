@@ -1,0 +1,26 @@
+# Eclipse
+.metadata/
+.settings/
+.classpath
+.project
+
+# Eclipse build dirs
+bin/
+tmp/
+
+# Maven
+target/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+
+# Spring Boot
+*.jar
+*.war
