@@ -77,8 +77,6 @@
       <artifactId>spring-cloud-starter-openfeign</artifactId>
     </dependency>
 
-
-
     <!-- Tests -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
