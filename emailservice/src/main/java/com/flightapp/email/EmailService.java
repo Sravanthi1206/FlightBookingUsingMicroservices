@@ -1,13 +1,13 @@
 package com.flightapp.email;
 
 import org.springframework.stereotype.Service;
+import com.flightapp.dto.BookingMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
 
 @Service
 public class EmailService {
-	
-  
+
   private final JavaMailSender mailSender;
 
   public EmailService(JavaMailSender mailSender){

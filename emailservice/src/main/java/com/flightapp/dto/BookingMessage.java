@@ -1,4 +1,4 @@
-package com.flightapp.email;
+package com.flightapp.dto;
 
 import java.io.Serializable;
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
 
-@FeignClient(name = "FLIGHTSERVICE", path = "/api/flights")
+@FeignClient(name = "flightservice", path = "/api/flights")
 public interface FlightClient {
 
     record SeatsRequest(int seats) {}
