@@ -1,11 +1,14 @@
 package com.flightapp.dto;
 
-import java.io.Serializable;
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
-public class BookingMessage implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class BookingMessage {
+
     private String id;
     private String userEmail;
     private String flightId;

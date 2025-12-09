@@ -30,6 +30,14 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+    
+    <!-- shared DTO module -->
+    <dependency>
+       <groupId>com.flightapp</groupId>
+       <artifactId>flightappcommon</artifactId>
+       <version>1.0.0</version>
+    </dependency>
+
 
     <!-- MongoDB -->
     <dependency>
