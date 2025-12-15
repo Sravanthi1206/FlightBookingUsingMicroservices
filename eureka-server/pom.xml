@@ -13,34 +13,22 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>configserver</artifactId>
-    <name>configserver</name>
-    <description>Spring Cloud Config Server for Flight Booking</description>
+    <artifactId>eureka-server</artifactId>
+    <name>eureka-server</name>
+    <description>Service Registry (Eureka Server) for Flight Booking</description>
 
     <dependencies>
 
-        <!-- Web (Config Server exposes HTTP endpoints) -->
+        <!-- Eureka Server -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
         </dependency>
 
         <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- Config Server -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-server</artifactId>
-        </dependency>
-
-        <!-- Eureka Client -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
         <!-- Tests -->
