@@ -15,7 +15,9 @@ public class WebSecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/actuator/**", "/h2-console/**").permitAll()
+                // Allow unauthenticated access only for login & signup endpoints
+                .requestMatchers("/auth/login", "/auth/signup", "/actuator/**", "/h2-console/**").permitAll()
+                // Any other endpoint (including /auth/change-password) requires authentication
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))

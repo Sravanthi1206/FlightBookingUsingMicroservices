@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class BookingController {
@@ -24,6 +26,15 @@ public class BookingController {
     @GetMapping("/bookings/{id}")
     public ResponseEntity<Booking> get(@PathVariable String id) {
         return ResponseEntity.ok(svc.getBooking(id));
+    }
+
+    @GetMapping("/bookings")
+    public ResponseEntity<List<Booking>> getByEmail(@RequestParam(value = "email", required = false) String email) {
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Booking> list = svc.getBookingsByEmail(email);
+        return ResponseEntity.ok(list);
     }
 
     @PostMapping("/bookings/{id}/cancel")

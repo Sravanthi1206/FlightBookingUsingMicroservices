@@ -2,6 +2,7 @@ package com.flightapp.controller;
 
 import com.flightapp.model.Flight;
 import com.flightapp.service.FlightService;
+import com.flightapp.config.RequireRole;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat; 
 
 @RestController
 @RequestMapping("/api")
@@ -20,6 +23,7 @@ public class FlightController {
         this.svc = svc;
     }
 
+    @RequireRole("ADMIN")
     @PutMapping("/flights/{id}/inventory")
     public ResponseEntity<Flight> addInventory(
             @PathVariable String id,
@@ -32,9 +36,10 @@ public class FlightController {
     @GetMapping("/flights")
     public List<Flight> search(
             @RequestParam String from,
-            @RequestParam String to) {
+            @RequestParam String to,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        return svc.search(from, to);
+        return svc.search(from, to, date);
     }
 
     @GetMapping("/flights/{id}")

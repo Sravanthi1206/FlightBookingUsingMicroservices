@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- ✅ SPRING BOOT PARENT -->
+    <!-- SPRING BOOT PARENT -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -34,7 +34,6 @@
         <spring-cloud.version>2022.0.4</spring-cloud.version>
     </properties>
 
-    <!-- 🔥 THIS WAS MISSING -->
     <dependencyManagement>
         <dependencies>
 
@@ -47,7 +46,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- 🔥 MANAGE COMMON MODULE VERSION -->
+            <!-- MANAGE COMMON MODULE VERSION -->
             <dependency>
                 <groupId>com.flightbooking</groupId>
                 <artifactId>flightappcommon</artifactId>

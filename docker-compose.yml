@@ -51,7 +51,7 @@ services:
       args:
         SERVICE_NAME: eureka-server
     ports:
-      - "18761:8761"
+      - "9761:8761"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 10s
@@ -70,11 +70,11 @@ services:
       eureka-server:
         condition: service_healthy
     ports:
-      - "18888:8888"
+      - "9888:8888"
     volumes:
       - ./config-repo:/config-repo  
     environment:
-      SPRING_PROFILES_ACTIVE: native
+      SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
@@ -121,6 +121,7 @@ services:
       mongodb:
         condition: service_healthy
     environment:
+      APP_JWT_SECRET: a-EiKcOQqlVMoERs7bznaCYR6EoPCb4N0iikaZgQiWo
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_CONFIG_URI: http://configserver:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
@@ -200,7 +201,7 @@ services:
       bookingservice:
         condition: service_healthy
     ports:
-      - "18080:8080"
+      - "8080:8080"
     environment:
       APP_JWT_SECRET: a-EiKcOQqlVMoERs7bznaCYR6EoPCb4N0iikaZgQiWo
       SPRING_PROFILES_ACTIVE: docker
