@@ -54,6 +54,12 @@ public class FlightService {
         // Duplicate check
         if (repo.existsById(id))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Flight number already exists");
+        
+        // Initialize bookedSeats set
+        if (payload.getBookedSeats() == null) {
+            payload.setBookedSeats(new java.util.HashSet<>());
+        }
+        
         return repo.save(payload);
     }
 
@@ -80,6 +86,68 @@ public class FlightService {
     public Flight getById(String id) {
         return repo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Flight not found"));
+    }
+
+    public List<String> getBookedSeats(String id) {
+        Flight flight = getById(id);
+        if (flight.getBookedSeats() == null) {
+            return List.of();
+        }
+        return List.copyOf(flight.getBookedSeats());
+    }
+
+    public void reserveSeats(String flightId, List<String> seatNumbers) {
+        Flight f = getById(flightId);
+        if (seatNumbers == null || seatNumbers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seat numbers required");
+        }
+        if (f.getDepartureTime() != null && f.getDepartureTime().isBefore(Instant.now()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot reserve seats for past flights");
+
+        // Initialize set
+        if (f.getBookedSeats() == null) {
+            f.setBookedSeats(new java.util.HashSet<>());
+        }
+
+        // Check availability and duplicates
+        for (String s : seatNumbers) {
+            if (s == null || s.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid seat number");
+            }
+            if (f.getBookedSeats().contains(s)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Seat already booked: " + s);
+            }
+        }
+
+        if (f.getAvailableSeats() < seatNumbers.size()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Not enough seats");
+        }
+
+        f.getBookedSeats().addAll(seatNumbers);
+        f.setAvailableSeats(f.getAvailableSeats() - seatNumbers.size());
+        repo.save(f);
+    }
+
+    public void releaseSeats(String flightId, List<String> seatNumbers) {
+        Flight f = getById(flightId);
+        if (seatNumbers == null || seatNumbers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seat numbers required");
+        }
+        if (f.getBookedSeats() == null) {
+            f.setBookedSeats(new java.util.HashSet<>());
+        }
+
+        int removed = 0;
+        for (String s : seatNumbers) {
+            if (f.getBookedSeats().remove(s)) {
+                removed++;
+            }
+        }
+        if (removed == 0) {
+            // No known seats removed; don't fail, but no-op
+        }
+        f.setAvailableSeats(Math.min(f.getTotalSeats(), f.getAvailableSeats() + removed));
+        repo.save(f);
     }
 
     @CircuitBreaker(name = "flight", fallbackMethod = "reserveFallback")

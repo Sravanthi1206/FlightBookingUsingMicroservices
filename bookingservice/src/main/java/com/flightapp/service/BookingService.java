@@ -60,7 +60,10 @@ public class BookingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Number of passengers must match number of seats");
         }
 
-        // Validate each passenger
+        // Validate each passenger and collect seat numbers
+        java.util.Set<String> seatNumbersSet = new java.util.HashSet<>();
+        java.util.List<String> seatNumbersList = new java.util.ArrayList<>();
+        
         for (int i = 0; i < req.getPassengers().size(); i++) {
             var passenger = req.getPassengers().get(i);
             if (passenger.getName() == null || passenger.getName().isEmpty()) {
@@ -78,6 +81,17 @@ public class BookingService {
             if (passenger.getAge() <= 0 || passenger.getAge() > 150) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passenger " + (i + 1) + " age is invalid");
             }
+            
+            // Validate seat number
+            if (passenger.getSeatNumber() == null || passenger.getSeatNumber().isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passenger " + (i + 1) + " seat number is required");
+            }
+            
+            // Check for duplicate seat numbers
+            if (!seatNumbersSet.add(passenger.getSeatNumber())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Duplicate seat number: " + passenger.getSeatNumber());
+            }
+            seatNumbersList.add(passenger.getSeatNumber());
         }
 
         // Validate flight - do not allow booking past flights
@@ -97,12 +111,19 @@ public class BookingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot book flights that have already departed");
         }
 
-        boolean reserved = reserveFlight(req.getFlightId(), bookingId, req.getSeats());
+        // Normalize and validate user email
+        if (req.getUserEmail() == null || req.getUserEmail().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User email is required");
+        }
+        req.setUserEmail(req.getUserEmail().trim().toLowerCase());
+
+        boolean reserved = reserveFlightSeats(req.getFlightId(), bookingId, seatNumbersList);
         if (!reserved) throw new ResponseStatusException(HttpStatus.CONFLICT, "Unable to reserve seats");
 
         req.setId(bookingId);
         req.setStatus("CONFIRMED");
         req.setCreatedAt(Instant.now());
+        req.setSeatNumbers(seatNumbersList);
         Booking saved = bookingRepo.save(req);
 
         BookingMessage m = new BookingMessage(saved.getId(), saved.getUserEmail(), saved.getFlightId(), saved.getSeats());
@@ -132,7 +153,9 @@ public class BookingService {
             }
         }
 
-        boolean released = releaseFlight(b.getFlightId(), b.getId(), b.getSeats());
+        java.util.List<String> seatNumbers = b.getSeatNumbers() != null ? b.getSeatNumbers() : java.util.Collections.emptyList();
+        boolean released = !seatNumbers.isEmpty() ? releaseFlightSeats(b.getFlightId(), b.getId(), seatNumbers)
+            : releaseFlight(b.getFlightId(), b.getId(), b.getSeats());
         if (!released) throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Unable to contact flight service");
 
         b.setStatus("CANCELLED");
@@ -149,16 +172,27 @@ public class BookingService {
         return updated;
     }
 
-    @CircuitBreaker(name = "flight", fallbackMethod = "reserveFallback")
-    public boolean reserveFlight(String flightId, String bookingId, int seats) {
-        flightClient.reserve(flightId, new FlightClient.SeatsRequest(seats));
+    @CircuitBreaker(name = "flight", fallbackMethod = "reserveSeatsFallback")
+    public boolean reserveFlightSeats(String flightId, String bookingId, java.util.List<String> seatNumbers) {
+        flightClient.reserveSeats(flightId, new FlightClient.SeatNumbersRequest(seatNumbers));
         return true;
     }
 
-    public boolean reserveFallback(String flightId, String bookingId, int seats, Throwable t) {
+    public boolean reserveSeatsFallback(String flightId, String bookingId, java.util.List<String> seatNumbers, Throwable t) {
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Flight service unavailable");
     }
 
+    @CircuitBreaker(name = "flight", fallbackMethod = "releaseSeatsFallback")
+    public boolean releaseFlightSeats(String flightId, String bookingId, java.util.List<String> seatNumbers) {
+        flightClient.releaseSeats(flightId, new FlightClient.SeatNumbersRequest(seatNumbers));
+        return true;
+    }
+
+    public boolean releaseSeatsFallback(String flightId, String bookingId, java.util.List<String> seatNumbers, Throwable t) {
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Flight service unavailable");
+    }
+
+    // Count-based release for backward compatibility and fallback
     @CircuitBreaker(name = "flight", fallbackMethod = "releaseFallback")
     public boolean releaseFlight(String flightId, String bookingId, int seats) {
         flightClient.release(flightId, new FlightClient.SeatsRequest(seats));

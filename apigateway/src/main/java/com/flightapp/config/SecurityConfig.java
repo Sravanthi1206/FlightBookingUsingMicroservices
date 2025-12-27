@@ -31,6 +31,8 @@ public class SecurityConfig {
 
                 // Public endpoints
                 .pathMatchers("/auth/**", "/public/**", "/actuator/**").permitAll()
+                // Allow unauthenticated flight search (GET only)
+                .pathMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
 
                 // Secure everything else
                 .anyExchange().authenticated()

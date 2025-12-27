@@ -3,6 +3,7 @@ package com.flightapp.controller;
 import com.flightapp.model.Flight;
 import com.flightapp.service.FlightService;
 import com.flightapp.config.RequireRole;
+import com.flightapp.dto.SeatNumbersRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,27 @@ public class FlightController {
     @GetMapping("/flights/{id}")
     public ResponseEntity<Flight> getById(@PathVariable String id) {
         return ResponseEntity.ok(svc.getById(id));
+    }
+
+    @GetMapping("/flights/{id}/booked-seats")
+    public ResponseEntity<List<String>> getBookedSeats(@PathVariable String id) {
+        return ResponseEntity.ok(svc.getBookedSeats(id));
+    }
+
+    @PostMapping("/flights/{id}/reserve-seats")
+    public ResponseEntity<Void> reserveSeats(
+            @PathVariable String id,
+            @RequestBody SeatNumbersRequest req) {
+        svc.reserveSeats(id, req.getSeatNumbers());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/flights/{id}/release-seats")
+    public ResponseEntity<Void> releaseSeats(
+            @PathVariable String id,
+            @RequestBody SeatNumbersRequest req) {
+        svc.releaseSeats(id, req.getSeatNumbers());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/flights/{id}/reserve")

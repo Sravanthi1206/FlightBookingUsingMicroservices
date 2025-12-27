@@ -36,7 +36,7 @@ public class BookingServiceTest {
         );
         when(client.get("f1")).thenReturn(ResponseEntity.ok(fi));
 
-        Booking req = new Booking(null, "f1", "u@example.com", 1, null, Instant.now(), null);
+        Booking req = new Booking(null, "f1", "u@example.com", 1, null, Instant.now(), java.util.Collections.emptyList(), null);
 
         assertThrows(ResponseStatusException.class, () -> svc.createBooking(req));
     }
@@ -47,7 +47,7 @@ public class BookingServiceTest {
         FlightClient client = Mockito.mock(FlightClient.class);
         KafkaTemplate<String, BookingMessage> k = Mockito.mock(KafkaTemplate.class);
 
-        Booking existing = new Booking("b1", "f1", "u@example.com", 2, "CONFIRMED", Instant.now(), null);
+        Booking existing = new Booking("b1", "f1", "u@example.com", 2, "CONFIRMED", Instant.now(), java.util.Collections.emptyList(), null);
         when(repo.findById("b1")).thenReturn(java.util.Optional.of(existing));
 
         // flight departs in 1 hour
@@ -67,7 +67,7 @@ public class BookingServiceTest {
         FlightClient client = Mockito.mock(FlightClient.class);
         KafkaTemplate<String, BookingMessage> k = Mockito.mock(KafkaTemplate.class);
 
-        Booking existing = new Booking("b2", "f2", "u@example.com", 1, "CONFIRMED", Instant.now(), null);
+        Booking existing = new Booking("b2", "f2", "u@example.com", 1, "CONFIRMED", Instant.now(), java.util.Collections.emptyList(), null);
         when(repo.findById("b2")).thenReturn(java.util.Optional.of(existing));
 
         // flight departs in 48 hours

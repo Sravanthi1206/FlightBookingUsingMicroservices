@@ -13,4 +13,5 @@ public class Passenger {
     private String phoneNumber;
     private String passport;
     private int age;
+    private String seatNumber;
 }

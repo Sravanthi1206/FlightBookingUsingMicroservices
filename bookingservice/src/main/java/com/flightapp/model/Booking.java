@@ -22,4 +22,5 @@ public class Booking {
     private String status;
     private Instant createdAt;
     private List<Passenger> passengers;
+    private List<String> seatNumbers;
 }

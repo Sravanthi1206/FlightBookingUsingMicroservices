@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +27,6 @@ public class Flight {
   private LocalDate flightDate;
   private Instant arrivalTime;
   private Double price;
+  private Set<String> bookedSeats = new HashSet<>();
 }
 
